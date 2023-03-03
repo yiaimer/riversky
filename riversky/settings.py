@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 
     # project apps
     'accounts',
+    'tweets',
 ]
 
 REST_FRAMEWORK = {
@@ -85,8 +86,13 @@ WSGI_APPLICATION = 'riversky.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'riversky',
+        'HOST': '192.168.0.33',
+        'PORT': '3306',
+        'USER': 'root',
+        'PASSWORD': '123456',
+        'CONN_MAX_AGE': 86400,
     }
 }
 
