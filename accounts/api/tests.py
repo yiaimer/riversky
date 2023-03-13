@@ -1,130 +1,105 @@
-from django.test import TestCase
 from rest_framework.test import APIClient
-from django.contrib.auth.models import User
+from testing.testcases import TestCase
+
 
 LOGIN_URL = '/api/accounts/login/'
 LOGOUT_URL = '/api/accounts/logout/'
 SIGNUP_URL = '/api/accounts/signup/'
 LOGIN_STATUS_URL = '/api/accounts/login_status/'
-
 class AccountApiTests(TestCase):
-
     def setUp(self):
-        # run at very test function
+        # 这个函数会在每个 test function 执行的时候被执行
         self.client = APIClient()
-        self.user = self.createUser(
+        self.user = self.create_user(
             username='admin',
-            email='admin@hotmail.com',
+            email='admin@jiuzhang.com',
             password='correct password',
         )
 
-    def createUser(self, username, email, password):
-        # cannot use User.objects.create()
-        # because password need to be encrypoted, username and email need normalization
-        return User.objects.create_user(username, email, password)
-
     def test_login(self):
-        # every test function needs to start with test_ to be used
-        # test must use post, not get
+        # 每个测试函数必须以 test_ 开头，才会被自动调用进行测试
+        # 测试必须用 post 而不是 get
         response = self.client.get(LOGIN_URL, {
             'username': self.user.username,
             'password': 'correct password',
         })
-        # log in failed, http status code return 405 = METHOD_NOT_ALLOWED
+        # 登陆失败，http status code 返回 405 = METHOD_NOT_ALLOWED
         self.assertEqual(response.status_code, 405)
-
-        # use post but with wrong password
+        # 用了 post 但是密码错了
         response = self.client.post(LOGIN_URL, {
             'username': self.user.username,
             'password': 'wrong password',
         })
         self.assertEqual(response.status_code, 400)
-
-        # check not login yet
+        # 验证还没有登录
         response = self.client.get(LOGIN_STATUS_URL)
         self.assertEqual(response.data['has_logged_in'], False)
-
-        # use correct password
+        # 用正确的密码
         response = self.client.post(LOGIN_URL, {
             'username': self.user.username,
             'password': 'correct password',
         })
         self.assertEqual(response.status_code, 200)
         self.assertNotEqual(response.data['user'], None)
-        self.assertEqual(response.data['user']['email'], 'admin@hotmail.com')
-
-        # check already login
+        self.assertEqual(response.data['user']['email'], 'admin@jiuzhang.com')
+        # 验证已经登录了
         response = self.client.get(LOGIN_STATUS_URL)
         self.assertEqual(response.data['has_logged_in'], True)
-
     def test_logout(self):
-        # log in first and tesst
+        # 先登录
         self.client.post(LOGIN_URL, {
             'username': self.user.username,
             'password': 'correct password',
         })
-
-        # check user already logged in
+        # 验证用户已经登录
         response = self.client.get(LOGIN_STATUS_URL)
         self.assertEqual(response.data['has_logged_in'], True)
-
-        # test must use post
+        # 测试必须用 post
         response = self.client.get(LOGOUT_URL)
         self.assertEqual(response.status_code, 405)
-
-        # change to post, logout successfully
+        # 改用 post 成功 logout
         response = self.client.post(LOGOUT_URL)
         self.assertEqual(response.status_code, 200)
-
-        # check if user already logged out
+        # 验证用户已经登出
         response = self.client.get(LOGIN_STATUS_URL)
         self.assertEqual(response.data['has_logged_in'], False)
-
     def test_signup(self):
         data = {
             'username': 'someone',
-            'email': 'someone@hotmail.com',
+            'email': 'someone@jiuzhang.com',
             'password': 'any password',
         }
-
-        # check get request fail
+        # 测试 get 请求失败
         response = self.client.get(SIGNUP_URL, data)
         self.assertEqual(response.status_code, 405)
-
-        # check wrong email address
+        # 测试错误的邮箱
         response = self.client.post(SIGNUP_URL, {
             'username': 'someone',
             'email': 'not a correct email',
             'password': 'any password'
         })
-        #print(response.status_code)
+        # print(response.data)
         self.assertEqual(response.status_code, 400)
-
-        # check password too short
+        # 测试密码太短
         response = self.client.post(SIGNUP_URL, {
             'username': 'someone',
-            'email': 'someone@hotmail.com',
-            'password': '123'
+            'email': 'someone@jiuzhang.com',
+            'password': '123',
         })
-        #print(response.data)
+        # print(response.data)
         self.assertEqual(response.status_code, 400)
-
-        # check username too long
+        # 测试用户名太长
         response = self.client.post(SIGNUP_URL, {
-            'username': 'username is toooooo loooooooong',
-            'email': 'someone@hotmail.com',
+            'username': 'username is tooooooooooooooooo loooooooong',
+            'email': 'someone@jiuzhang.com',
             'password': 'any password',
         })
         # print(response.data)
         self.assertEqual(response.status_code, 400)
-
-        # signup successful
+        # 成功注册
         response = self.client.post(SIGNUP_URL, data)
-        #print(response.data)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data['user']['username'], 'someone')
-
-        # check user logged out
+        # 验证用户已经登入
         response = self.client.get(LOGIN_STATUS_URL)
         self.assertEqual(response.data['has_logged_in'], True)
-# Create your tests here.
