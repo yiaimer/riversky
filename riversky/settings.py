@@ -88,7 +88,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'riversky',
-        'HOST': '192.168.0.39',
+        'HOST': '192.168.0.35',
         'PORT': '3306',
         'USER': 'root',
         'PASSWORD': '123456',
