@@ -24,3 +24,5 @@ class Tweet(models.Model):
         # 这里是你执行 print(tweet instance) 的时候会显示的内容
         return f'{self.created_at} {self.user}: {self.content}'
 
+
+
