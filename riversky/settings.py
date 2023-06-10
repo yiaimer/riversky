@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'tweets',
     'friendships',
     'newsfeeds',
+    'comments',
 ]
 
 REST_FRAMEWORK = {
@@ -90,7 +91,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'riversky',
-        'HOST': '192.168.0.35',
+        'HOST': '192.168.0.37',
         'PORT': '3306',
         'USER': 'root',
         'PASSWORD': '123456',
