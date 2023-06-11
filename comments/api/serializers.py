@@ -31,10 +31,19 @@ class CommentSerializerForCreate(serializers.ModelSerializer):
         # 也就是验证过之后，进行过处理的（当然也可以不做处理）输入数据
         return data
 
-
     def create(self, validated_data):
         return Comment.objects.create(
             user_id=validated_data['user_id'],
             tweet_id=validated_data['tweet_id'],
             content=validated_data['content'],
         )
+class CommentSerializerForUpdate(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ('content',)
+
+    def update(self, instance, validated_data):
+        instance.content = validated_data['content']
+        instance.save()
+        # update 方法要求 return 修改后的 instance 作为返回值
+        return instance
