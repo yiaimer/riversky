@@ -7,10 +7,11 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.cache import caches
 from likes.models import Like
 from newsfeeds.models import NewsFeed
-
+from utils.redis_client import RedisClient
 
 class TestCase(DjangoTestCase):
     def clear_cache(self):
+        RedisClient.clear()
         caches['testing'].clear()
 
     @property
