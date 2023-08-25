@@ -4,11 +4,14 @@ from django.test import TestCase as DjangoTestCase
 from rest_framework.test import APIClient
 from tweets.models import Tweet
 from django.contrib.contenttypes.models import ContentType
+from django.core.cache import caches
 from likes.models import Like
 from newsfeeds.models import NewsFeed
 
 
 class TestCase(DjangoTestCase):
+    def clear_cache(self):
+        caches['testing'].clear()
 
     @property
     def anonymous_client(self):
